@@ -1,0 +1,1 @@
+Exercises and Projects of K.U Leuven's Master of research in Economics, mainly from the courses of Advanced Macroeconomics I, Advanced Macroeceonomics II, Advanced Topics in Macroeconomics & Policy and Advanced Econometrics. Includint Dynare usage, statistic and trend analysis, quantitative solving macroeconomics models (business cycle...).
