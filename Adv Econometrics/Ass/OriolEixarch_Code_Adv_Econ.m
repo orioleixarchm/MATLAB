@@ -1,7 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Advanced Econometrics                                                   %
 % Sample Bias and Bootstrap Correction in Finite Samples for AR(1) Models %
-% Kaat Verbist         r0840862                                           %
 % Oriol Eixarch Mejías r0872954                                           %
 % 21/09/2025                                                              %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20,8 +19,8 @@ B = 1000;                           %Bootstrap replications
 buff = 100;                         %Buffer Observations to remove the effect of the first value (the initial contribution dies out at a rate rho)
 alpha_ci = 0.05;                    %95% Conf interval
 
-co_ols = zeros(R,1);                %Result Grid OLS estimator 1 i within CI 0 otherwise
-co_bc = zeros(R,1);                 %Result Grid BC estimator 1 i within CI 0 otherwise
+co_ols = zeros(R,1);                %Result Grid OLS estimator 1 if within CI 0 otherwise
+co_bc = zeros(R,1);                 %Result Grid BC estimator 1 if within CI 0 otherwise
 
 ci_ols_store  = zeros(R,2);         %OLS CI Endpoints
 ci_bc_store   = zeros(R,2);         %BC CI Endpoints
@@ -101,6 +100,7 @@ for rho = rho_vec
             rho_bc = rho_hat - bias;                                %Corrected estimator rho
        
             %rho_bc_star   = 2*rho_star - mean_rho;                 %%Used in option B for SE and CI computations IN Boostrap Replication%%
+                                                                    %%Formula ρ^​BC=ρ^​−Bias=ρ^​−(ρ^​ˉ​∗−ρ^​)=2ρ^​−ρ^​ˉ​∗%%
                                                                     %bootstrap analogs of rho_bc, rho_bc = rho_hat - bias: rho_hat - (mean_rho - rho_hat) = 2*rho_hat - mean_rho
             %se_bc_boot    = std(rho_bc_star, 0);                   %%Used in option B for SE and CI computations%%
                                                                     %Se of our Rho BC estimator
@@ -210,7 +210,7 @@ for rho = rho_vec
             xline(mean_rho_bc,'-.','LineWidth',1.5);
             title(sprintf('T = %d',T))                                                                  %Adding title and labels
             xlabel('\rho estimate'); ylabel('Density');
-            legend({'$\hat{\rho}$ (OLS)', '$\hat{\rho}^{BC}$', 'true $\rho$','mean $\hat{\\rho}$', ...
+            legend({'$\hat{\rho}$ (OLS)', '$\hat{\rho}^{BC}$', 'true $\rho$','mean $\hat{\rho}$', ...
                     'mean $\hat{\rho}^{BC}$'},'Interpreter','latex','Location','best');
             if p <= 2                                                                                   %Controlling x-axis limits
                 xlim([-1.5,2])
@@ -249,7 +249,7 @@ end
 
 %% OPTION A%%
 %%Explanation: We consider that the bias correction is a deterministic
-%%shift of the center and thys we can still use rho's varaince (ols). It is
+%%shift of the center and thus we can still use rho's varaince (ols). It is
 %%simpler but comes at the cost of ignoring the extra uncertainty from
 %%estimating the bias.
 %%create a bootstrap analog for our BC estimation, we compute its se.
@@ -260,7 +260,7 @@ end
 % outside the bounds). 
 
 %% OPTION B%%
-%%Explanation: We manually try to use the frmula found in Efron, 1979  to
+%%Explanation: We manually try to use the formula found in Efron, 1979  to
 %%create a bootstrap analog for our BC estimation, we compute its se.
 %%Closer to reality, se becomes very big due to the bias inclusion which is 
 %%essentially a random variable,thus CI becames huge and thus more concervative
@@ -272,3 +272,6 @@ end
 % the bias is a random variable (it depends on bootstrap draws), adds extra variability. 
 % We face a clear trade-off increased variability in exchange of a less biase estimator, 
 % that is why CI for the BC estimator are significantly widder.
+
+% Bias of rho when regressing y_t-1 on y_ t => E[ρ_hat−ρ]≈−(1+3ρ)/T, larger values of rho (sample ie unchanged) lead to larger bias, as the sample grows, the bias fades. 
+% Formula extracted from existing literature e.g: Kendall 1954, Nickell 1958
